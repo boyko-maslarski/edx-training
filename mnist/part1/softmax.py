@@ -5,6 +5,7 @@ from utils import *
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.sparse as sparse
+import copy
 
 
 def augment_feature_vector(X):
@@ -23,18 +24,17 @@ def compute_probabilities(X, theta, temp_parameter):
     print(X)
     print(theta)
     print(temp_parameter)
-    e = np.empty([theta.shape[0], X.shape[0]])
+    e = np.full([theta.shape[0], X.shape[0]], 1)
     max_theta = theta[theta.shape[0] - 1]
+    sum_array = np.full([X.shape[0], ], 1)
     for n_index in range(X.shape[0]):
         x_sum = 0
         for j_index in range(theta.shape[0]):
-            x_sum += np.e ** ((theta[j_index] @ X[n_index] / temp_parameter) - (max_theta @ X[n_index] / temp_parameter))
-        product = 1 / x_sum
-        np.append(e, np.e ** x_sum)
-
-        print(x_sum)
-    print(e)
-    return product * e
+            data = np.e ** ((theta[j_index] @ X[n_index] / temp_parameter) - (max_theta @ X[n_index] / temp_parameter))
+            e[j_index][n_index] = data
+            x_sum += data
+        sum_array[n_index] = float(1 / x_sum)
+    return sum_array * e
             
 
 
