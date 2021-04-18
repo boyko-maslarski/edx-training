@@ -1,0 +1,96 @@
+# %%
+import numpy as np
+from numpy import linalg as LA
+
+# Initiate
+d = 1
+K = 2
+n = 5
+pi = np.array([0.5, 0.5])
+mu = np.array([-3, 2])
+sigma = np.array([4, 4])
+data = np.array([0.2, -0.9, -1, 1.2, 1.8])
+# d = 1
+# K = 2
+# n = 5
+# pi = np.array([0.5, 0.5])
+# mu = np.array([6, 7])
+# sigma = np.array([1, 4])
+# data = np.array([-1, 0, 4, 5, 6])
+
+# %%
+def e_step(d, K, n, pi, mu, sigma, data):
+    calc = np.empty([K, n])
+    final_calc = np.empty([K, n])
+    for gausian in range(K):
+        for entry in range(n):
+            calc[gausian, entry] = pi[gausian]*(1/(np.power((2*np.pi*sigma[gausian]), d/2)))*(np.e**((-1/(2*sigma[gausian])*(LA.norm(data[entry]-mu[gausian])**2))))         
+            # print(calc[gausian, entry])
+            # print("d: " + str(d))
+            # print("K: " + str(K))
+            # print("n: " + str(n))
+            # print("pi[gausian]: " + str(pi[gausian]))
+            # print("sigma[gausian]: " + str(sigma[gausian]))
+            # print("mu[gausian]: " + str(mu[gausian]))
+            # print("data[entry]: " + str(data[entry]))
+    for entry in range(n):
+        final_calc[0, entry] = calc[0, entry]/(calc[0, entry] + calc[1, entry])  
+        final_calc[1, entry] = calc[1, entry]/(calc[0, entry] + calc[1, entry])  
+    return final_calc
+
+
+
+def m_step():
+    pass
+
+def n_hat(K, n):
+    pass
+    return n_hat, n_hat_data
+
+def p_hat(n, K, data, final_calc, mu):
+    sum = 0
+    sum_mu = 0
+    sum_sigma = 0
+    for entry in range(n):
+        sum += final_calc[K, entry]
+        sum_mu += final_calc[K, entry] * data[entry]
+        sum_sigma += final_calc[K, entry] * (LA.norm(data[entry]-mu[K])**2)
+    return sum/n, sum_mu/sum
+
+def mu_hat(n, K, data):
+    sum = 0
+    sum_row = 0
+    for entry in range(n):
+        sum += final_calc[K, entry] * data[entry]
+        sum_row += final_calc[K, entry]
+    return sum/sum_row
+    
+
+def sigma_hat(n, K, data, final_calc, mu_hat):
+    sum_sigma = 0
+    sum = 0
+    for entry in range(n):
+        sum += final_calc[K, entry]
+        sum_sigma += final_calc[K, entry] * (LA.norm(data[entry]-mu_hat)**2)
+    return sum_sigma/sum
+
+# %%
+e_step_return = e_step(d, K, n, pi, mu, sigma, data)
+sum = np.sum(e_step_return)
+
+# %%
+n_hat, mu_hat = p_hat(n, 0, data, e_step_return, mu)
+sigma_hat = sigma_hat(n, 0, data, e_step_return, mu_hat)
+# %%
+print(0.5*(1/(np.power((2*np.pi*4), 1/2)))*np.exp(-((1/2)*4)*(LA.norm(0.2+3)**2)))
+
+# %%
+# l1 norm of a vector
+# from numpy import array
+# from numpy.linalg import norm
+# a = array([0, -6])
+# print(a)
+# l1 = norm(a, 1)
+# print(l1)
+
+# %%
